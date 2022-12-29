@@ -14,7 +14,7 @@ function extractCsrfToken(res) {
 describe("Todo test suite ", () => {
   beforeAll(async () => {
     await db.sequelize.sync({ force: true });
-    server = app.listen(4000, () => {});
+    server = app.listen(3000, () => {});
     agent = request.agent(server);
   });
   afterAll(async () => {
@@ -42,10 +42,10 @@ describe("Todo test suite ", () => {
       completed: false,
       _csrf: csrfToken,
     });
-    const gropuedTodosResponse = await agent
+    const groupedTodosResponse = await agent
       .get("/")
       .set("Accept", "application/json");
-    const parsedGroupedResponse = JSON.parse(gropuedTodosResponse.text);
+    const parsedGroupedResponse = JSON.parse(groupedTodosResponse.text);
     const dueTodayCount = parsedGroupedResponse.dueToday.length;
     const latestTodo = parsedGroupedResponse.dueToday[dueTodayCount - 1];
     const status = latestTodo.completed ? false : true;
@@ -70,10 +70,10 @@ describe("Todo test suite ", () => {
       _csrf: csrfToken,
     });
 
-    const gropuedTodosResponse = await agent
+    const groupedTodosResponse = await agent
       .get("/")
       .set("Accept", "application/json");
-    const parsedGroupedResponse = JSON.parse(gropuedTodosResponse.text);
+    const parsedGroupedResponse = JSON.parse(groupedTodosResponse.text);
     const dueTodayCount = parsedGroupedResponse.dueToday.length;
     const latestTodo = parsedGroupedResponse.dueToday[dueTodayCount - 1];
 
