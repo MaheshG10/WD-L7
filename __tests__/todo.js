@@ -38,11 +38,11 @@ describe("Todo Application", function () {
     expect(response.statusCode).toBe(302);
   });
 
-  test("Marks a todo with the given ID as complete", async () => {
+  test("Mark todo as completed (Updating Todo)", async () => {
     let res = await agent.get("/");
     let csrfToken = extractCSRFToken(res.text);
     await agent.post("/todos").send({
-      title: "Wash Dishes",
+      title: "Buy milk",
       dueDate: new Date().toISOString(),
       _csrf: csrfToken,
     });
@@ -65,7 +65,7 @@ describe("Todo Application", function () {
     expect(parsedUpdateResponse.completed).toBe(true);
   });
 
-  test("Deletes a todo with the given ID", async () => {
+  test("Delete todo using ID", async () => {
     let res = await agent.get("/");
     let csrfToken = extractCSRFToken(res.text);
 
