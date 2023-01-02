@@ -39,6 +39,7 @@ describe("Todo test suite", () => {
     await agent.post("/todos").send({
       title: "Buy milk",
       dueDate: new Date().toISOString(),
+      completed:false,
       _csrf: csrfToken,
     });
 
@@ -47,13 +48,14 @@ describe("Todo test suite", () => {
       .set("Accept", "application/json");
     const parsedResponse = JSON.parse(groupedTodos.text);
     const lastItem = parsedResponse[parsedResponse.length - 1];
+    const status = lastItem.completed ? false : true;
 
     res = await agent.get("/");
     csrfToken = extractCSRFToken(res);
 
     const markCompleteResponse = await agent.put(`/todos/${lastItem.id}`).send({
       _csrf: csrfToken,
-      completed: true,
+      completed: status,
     });
 
     const parsedUpdateResponse = JSON.parse(markCompleteResponse.text);
@@ -67,10 +69,12 @@ describe("Todo test suite", () => {
     await agent.post("/todos").send({
       title: "Complete levels",
       dueDate: new Date().toISOString(),
+      completed:false,
       _csrf: csrfToken,
     });
 
-    const response = await agent.get("/todos");
+    const response = await agent.get("/todos")
+    .set("Accept", "application/json");
     const parsedResponse = JSON.parse(response.text);
     const todoID = parsedResponse[parsedResponse.length - 1].id;
 
@@ -79,7 +83,9 @@ describe("Todo test suite", () => {
 
     const deleteResponse = await agent.put(`/todos/${todoID}`).send({
       _csrf: csrfToken,
+      completed :true
     });
-    expect(deleteResponse.statusCode).toBe(302);
+    const parsedUpdateResponse = JSON.parse(deleteResponse.text);
+    expect(parsedUpdateResponse.completed).toBe(true);
   });
 });
