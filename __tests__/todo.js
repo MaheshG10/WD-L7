@@ -80,6 +80,6 @@ describe("Todo test suite", () => {
     const deleteResponse = await agent.put(`/todos/${todoID}`).send({
       _csrf: csrfToken,
     });
-    expect(deleteResponse.statusCode).toBe(200);
+    expect(deleteResponse.statusCode).toBe(302);
   });
 });
