@@ -5,30 +5,25 @@ const app = require("../app");
 
 let server, agent;
 
-const extractCSRFToken = (html) => {
-  const $ = cheerio.load(html);
+function extractCSRFToken(res) {
+  var $ = cheerio.load(res.text);
   return $("[name=_csrf]").val();
-};
+}
 
-describe("Todo Application", function () {
+describe("Todo test suite", () => {
   beforeAll(async () => {
     await db.sequelize.sync({ force: true });
-    server = app.listen(5000, () => {});
+    server = app.listen(4000, () => {});
     agent = request.agent(server);
   });
 
   afterAll(async () => {
-    try {
-      await db.sequelize.close();
-      await server.close();
-    } catch (error) {
-      console.log(error);
-    }
+    await db.sequelize.close();
+    server.close();
   });
-
   test("Creates a  new todo", async () => {
-    const { text } = await agent.get("/");
-    const csrfToken = extractCSRFToken(text);
+    const res = await agent.get("/");
+    const csrfToken = extractCSRFToken(res);
 
     const response = await agent.post("/todos").send({
       title: "Buy milk",
@@ -40,7 +35,7 @@ describe("Todo Application", function () {
 
   test("Mark todo as completed (Updating Todo)", async () => {
     let res = await agent.get("/");
-    let csrfToken = extractCSRFToken(res.text);
+    let csrfToken = extractCSRFToken(res);
     await agent.post("/todos").send({
       title: "Buy milk",
       dueDate: new Date().toISOString(),
@@ -54,7 +49,7 @@ describe("Todo Application", function () {
     const lastItem = parsedResponse[parsedResponse.length - 1];
 
     res = await agent.get("/");
-    csrfToken = extractCSRFToken(res.text);
+    csrfToken = extractCSRFToken(res);
 
     const markCompleteResponse = await agent.put(`/todos/${lastItem.id}`).send({
       _csrf: csrfToken,
@@ -67,7 +62,7 @@ describe("Todo Application", function () {
 
   test("Delete todo using ID", async () => {
     let res = await agent.get("/");
-    let csrfToken = extractCSRFToken(res.text);
+    let csrfToken = extractCSRFToken(res);
 
     await agent.post("/todos").send({
       title: "Complete levels",
@@ -80,9 +75,9 @@ describe("Todo Application", function () {
     const todoID = parsedResponse[parsedResponse.length - 1].id;
 
     res = await agent.get("/");
-    csrfToken = extractCSRFToken(res.text);
+    csrfToken = extractCSRFToken(res);
 
-    const deleteResponse = await agent.delete(`/todos/${todoID}`).send({
+    const deleteResponse = await agent.put(`/todos/${todoID}`).send({
       _csrf: csrfToken,
     });
     expect(deleteResponse.statusCode).toBe(200);
