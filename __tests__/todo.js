@@ -70,7 +70,7 @@ describe("Todo test cases", function () {
     expect(res.statusCode).toBe(302);
   });
 
-  test("Creates a todo", async () => {
+  test("Create new todo", async () => {
     const agent = request.agent(server);
     await login(agent, "user.a@test.com", "password");
     const { text } = await agent.get("/todos");
@@ -84,7 +84,7 @@ describe("Todo test cases", function () {
     expect(response.statusCode).toBe(302);
   });
 
-  test("Marks a todo with the given ID as complete", async () => {
+  test("Mark todo as completed (Updating Todo)", async () => {
     const agent = request.agent(server);
     await login(agent, "user.a@test.com", "password");
     let res = await agent.get("/todos");
@@ -113,7 +113,7 @@ describe("Todo test cases", function () {
     expect(parsedUpdateResponse.completed).toBe(true);
   });
 
-  test("Marks a todo with the given ID as incomplete", async () => {
+  test("Mark todo as incomplete", async () => {
     const agent = request.agent(server);
     await login(agent, "user.a@test.com", "password");
     const groupedTodos = await agent
@@ -136,7 +136,7 @@ describe("Todo test cases", function () {
     expect(parsedIncompleteResponse.completed).toBe(false);
   });
 
-  test("Deletes a todo with the given ID", async () => {
+  test("Deleting todo test", async () => {
     const agent = request.agent(server);
     await login(agent, "user.a@test.com", "password");
     let res = await agent.get("/todos");
